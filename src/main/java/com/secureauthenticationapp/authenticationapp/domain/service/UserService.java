@@ -44,7 +44,7 @@ public class UserService {
                 .firstName(registration.getFirstName())
                 .lastName(registration.getLastName())
                 .build();
-
+        log.info("New user: {}", newUser + " created successfully");
         return userRepository.save(newUser);
     }
 
@@ -64,6 +64,7 @@ public class UserService {
             if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
                 user.setLockTime(new Date()); // Lock the account
                 userRepository.save(user);
+                log.warn("Account locked due to too many failed attempts: {}", user);
                 throw new UserAuthenticationException("Account is locked due to too many failed attempts.");
             }
             userRepository.save(user);
@@ -75,6 +76,7 @@ public class UserService {
         userRepository.save(user);
         String token = UUID.randomUUID().toString();
         tokenStore.put(token, user.getUsername()); // Associate token with username
+        log.info("User: {} authenticated successfully", user);
         return token;
     }
 
