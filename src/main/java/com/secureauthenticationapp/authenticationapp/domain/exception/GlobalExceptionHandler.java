@@ -39,6 +39,18 @@ public class GlobalExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
+    @ExceptionHandler(UserAuthenticationException.class)
+    public ResponseEntity<Object> handleUserAuthenticationException(UserAuthenticationException ex) {
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .errorCode(ErrorCodeUtil.getErrorCodeForException(ex))
+                .build();
+        return buildResponseEntity(apiError);
+    }
+
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

@@ -1,6 +1,7 @@
 package com.secureauthenticationapp.authenticationapp.utils;
 
 import com.secureauthenticationapp.authenticationapp.domain.exception.EmailAlreadyExistException;
+import com.secureauthenticationapp.authenticationapp.domain.exception.UserAuthenticationException;
 import com.secureauthenticationapp.authenticationapp.domain.exception.UsernameAlreadyTakenException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -17,6 +18,7 @@ public class ErrorCodeUtil {
 
             Map.entry(EmailAlreadyExistException.class, 100003),
             Map.entry(UsernameAlreadyTakenException.class, 100018),
+            Map.entry(UserAuthenticationException.class, 100019),
 
             Map.entry(MethodArgumentNotValidException.class, 200001),
             Map.entry(ConstraintViolationException.class, 200002),
