@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.Date;
+
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 
 @Getter
@@ -85,4 +87,18 @@ public class UserEntity {
     @Size(min = 2, max = 30, message = "Last name must be between 2 and 80 characters")
     @Column(name = "lastName")
     private String lastName;
+
+    /**
+     * Number of failed login attempts for the user.
+     */
+    @Builder.Default
+    @Column(name = "failedLoginAttempts", columnDefinition = "int default 0")
+    @Min(value = 0, message = "Failed login attempts cannot be negative")
+    private Integer failedLoginAttempts = 0;
+
+    /**
+     * The time the user's account was locked.
+     */
+    @Column(name = "lockTime")
+    private Date lockTime;
 }

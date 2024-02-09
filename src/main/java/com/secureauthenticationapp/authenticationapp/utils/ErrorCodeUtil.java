@@ -1,7 +1,6 @@
 package com.secureauthenticationapp.authenticationapp.utils;
 
-import com.secureauthenticationapp.authenticationapp.domain.exception.EmailAlreadyExistException;
-import com.secureauthenticationapp.authenticationapp.domain.exception.UsernameAlreadyTakenException;
+import com.secureauthenticationapp.authenticationapp.domain.exception.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,8 +14,11 @@ public class ErrorCodeUtil {
 
     private static final Map<Class<? extends Throwable>, Integer> STANDARD_EXCEPTION_ERROR_CODES = Map.ofEntries(
 
-            Map.entry(EmailAlreadyExistException.class, 100003),
-            Map.entry(UsernameAlreadyTakenException.class, 100018),
+            Map.entry(EmailAlreadyExistException.class, 100001),
+            Map.entry(UsernameAlreadyTakenException.class, 10002),
+            Map.entry(UserAuthenticationException.class, 10003),
+            Map.entry(CustomFileUploadException.class, 10004),
+            Map.entry(FileDeleteException.class, 10004),
 
             Map.entry(MethodArgumentNotValidException.class, 200001),
             Map.entry(ConstraintViolationException.class, 200002),

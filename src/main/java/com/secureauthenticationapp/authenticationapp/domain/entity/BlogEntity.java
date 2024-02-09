@@ -69,4 +69,10 @@ public class BlogEntity {
     @CreatedDate
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
+
+    /**
+     * The URL of the image associated with the blog post.
+     */
+    @Column(name = "image_url")
+    private String imageUrl;
 }
