@@ -51,6 +51,42 @@ public class GlobalExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
+    @ExceptionHandler(CustomFileUploadException.class)
+    public ResponseEntity<Object> handleFileUploadException(CustomFileUploadException ex) {
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .errorCode(ErrorCodeUtil.getErrorCodeForException(ex))
+                .build();
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(FileDeleteException.class)
+    public ResponseEntity<Object> handleFileDeleteException(FileDeleteException ex) {
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .errorCode(ErrorCodeUtil.getErrorCodeForException(ex))
+                .build();
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleException(Exception ex) {
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message("An unexpected error occurred. Please try again later.")
+                .timestamp(LocalDateTime.now())
+                .errorCode(ErrorCodeUtil.getErrorCodeForException(ex))
+                .build();
+        return buildResponseEntity(apiError);
+    }
+
     private ResponseEntity<Object> buildResponseEntity(ApiError apiError) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
