@@ -64,7 +64,7 @@ public class StorageService {
             return fileUrl;
         } catch (IOException e) {
             log.error("Error uploading file: {}", e.getMessage());
-            throw new CustomFileUploadException("Error uploading file");
+            throw new CustomFileUploadException("Error uploading file", e);
         }
     }
 
