@@ -57,7 +57,7 @@ public class UserService {
     //@Transactional(dontRollbackOn = {UserAuthenticationException.class})
     public String authenticateUser(AuthenticationRequest authenticationRequest) {
         UserEntity user = userRepository.findByUsername(authenticationRequest.getUsername())
-                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
         if (user.getLockTime() != null && new Date().getTime() - user.getLockTime().getTime() < LOCK_TIME_DURATION) {
             throw new UserAuthenticationException("Account is locked. Please try again later.");
         }
