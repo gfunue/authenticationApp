@@ -84,6 +84,9 @@ public class UserService {
 
     public void logoutUser(String token) {
         try {
+            if(!tokenStore.containsKey(token)) {
+                throw new UserAuthenticationException("Invalid token");
+            }
             tokenStore.remove(token);
             log.info("User logged out successfully");
         } catch (Exception e) {
