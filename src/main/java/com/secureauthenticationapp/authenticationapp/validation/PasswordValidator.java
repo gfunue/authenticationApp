@@ -43,21 +43,6 @@ public class PasswordValidator {
             throw new IllegalArgumentException("Password must be between 8 and 30 characters long.");
         }
 
-        // Digit check
-        if (!password.matches(".*\\d.*")) {
-            throw new IllegalArgumentException("Password must contain at least one digit.");
-        }
-
-        // Lower case check
-        if (!password.matches(".*[a-z].*")) {
-            throw new IllegalArgumentException("Password must contain at least one lowercase letter.");
-        }
-
-        // Upper case check
-        if (!password.matches(".*[A-Z].*")) {
-            throw new IllegalArgumentException("Password must contain at least one uppercase letter.");
-        }
-
         // Common password check
         if (isCommonPassword(password)) {
             throw new IllegalArgumentException("Password is too common.");

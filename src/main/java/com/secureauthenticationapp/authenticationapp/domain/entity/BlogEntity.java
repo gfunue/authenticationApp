@@ -42,25 +42,25 @@ public class BlogEntity {
      * The introductory part of the blog post, limited to 500 characters.
      * Cannot be empty.
      */
-    @Size(max = 500, message = "BlogEntity introduction cannot be longer than 500 characters")
+    @Size(max = 2000, message = "BlogEntity introduction cannot be longer than 500 characters")
     @NotBlank(message = "BlogEntity introduction cannot be left blank/empty")
-    @Column(name = "intro", nullable = false, length = 500)
+    @Column(name = "intro", nullable = false, length = 2000)
     private String intro;
 
     /**
      * The main content of the blog post, limited to 5000 characters.
      * Cannot be empty.
      */
-    @Size(max = 5000, message = "BlogEntity content/body cannot be more than 5000 characters long")
+    @Size(max = 20000, message = "BlogEntity content/body cannot be more than 5000 characters long")
     @NotBlank(message = "BlogEntity content cannot be left blank/empty")
-    @Column(name = "content", nullable = false, length = 5000)
+    @Column(name = "content", nullable = false, length = 20000)
     private String content;
 
     /**
      * The concluding part of the blog post, limited to 500 characters.
      */
-    @Size(max = 500, message = "BlogEntity conclusion cannot be more than 500 characters long")
-    @Column(name = "conclusion", length = 500)
+    @Size(max = 2000, message = "BlogEntity conclusion cannot be more than 500 characters long")
+    @Column(name = "conclusion", length = 2000)
     private String conclusion;
 
     /**

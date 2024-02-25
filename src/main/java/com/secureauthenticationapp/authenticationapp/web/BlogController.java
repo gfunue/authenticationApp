@@ -9,7 +9,9 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,7 +31,7 @@ public class BlogController {
     private final BlogService blogService;
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/create")
+    @PostMapping("/create-blog")
     public ResponseEntity<HttpResponse> createBlog(
             @Valid @RequestPart("blog") String blogJson,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
@@ -117,20 +120,50 @@ public class BlogController {
     }
 
 
-    @GetMapping("/all")
-    public ResponseEntity<HttpResponse> getAllBlogs(@PageableDefault(size = 5) Pageable pageable) {
-        Page<BlogEntity> page = blogService.getAllBlogs(pageable);
+//    @GetMapping("/all-blogs")
+//    public ResponseEntity<HttpResponse> getAllBlogs(@PageableDefault(size = 5) Pageable pageable) {
+//        Page<BlogEntity> page = blogService.getAllBlogs(pageable);
+//        HttpResponse response = HttpResponse.builder()
+//                .timeStamp(LocalDateTime.now().toString())
+//                .statusCode(HttpStatus.OK.value())
+//                .status(HttpStatus.OK)
+//                .reason(HttpStatus.OK.getReasonPhrase())
+//                .message("Blogs found successfully")
+//                .developerMessage("Blog retrieval processed")
+//                .data(Collections.singletonMap("blogs", page))
+//                .build();
+//        return ResponseEntity.ok(response);
+//    }
+
+    @GetMapping("/all-blogs")
+    public ResponseEntity<HttpResponse> getAllBlogs(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "5") int size,
+            @RequestParam(value = "sort", defaultValue = "id,asc") String[] sort) {
+
+        // Parse the sort parameters
+        List<Sort.Order> orders = new ArrayList<>();
+        for (String sortOrder : sort) {
+            String[] sortSplit = sortOrder.split(",");
+            orders.add(new Sort.Order(Sort.Direction.fromString(sortSplit[1]), sortSplit[0]));
+        }
+
+        // Create a Pageable object
+        Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
+
+        Page<BlogEntity> blogPage = blogService.getAllBlogs(pageable);
         HttpResponse response = HttpResponse.builder()
                 .timeStamp(LocalDateTime.now().toString())
                 .statusCode(HttpStatus.OK.value())
                 .status(HttpStatus.OK)
                 .reason(HttpStatus.OK.getReasonPhrase())
-                .message("Blogs found successfully")
+                .message("Blogs loaded successfully")
                 .developerMessage("Blog retrieval processed")
-                .data(Collections.singletonMap("blogs", page))
+                .data(Collections.singletonMap("blogs", blogPage))
                 .build();
         return ResponseEntity.ok(response);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpResponse> deleteBlog(@PathVariable Long id) {
