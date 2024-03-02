@@ -1,4 +1,4 @@
-package com.secureauthenticationapp.authenticationapp;
+package com.secureauthenticationapp.authenticationapp.unitTest.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -8,7 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
 import java.util.ArrayList;
 
 
@@ -42,7 +41,7 @@ class BlogServiceTest {
 
 
     @Test
-    public void testCreateBlog() {
+    void testCreateBlog() {
         
         BlogEntity blogEntity = new BlogEntity();
         MultipartFile imageFile = new MockMultipartFile("imagefile", "Hello, World!".getBytes());
@@ -57,7 +56,7 @@ class BlogServiceTest {
     }
 
     @Test
-    public void testUpdateBlog() {
+    void testUpdateBlog() {
         BlogEntity blogEntity = new BlogEntity();
         MultipartFile imageFile = new MockMultipartFile("imagefile", "Hello, World!".getBytes());
 
@@ -72,7 +71,7 @@ class BlogServiceTest {
     }
 
     @Test
-    public void testGetBlogById() {
+    void testGetBlogById() {
     BlogEntity blogEntity = new BlogEntity();
 
     when(blogRepository.findById(any(Long.class))).thenReturn(Optional.of(blogEntity));
@@ -84,7 +83,7 @@ class BlogServiceTest {
     }
 
     @Test
-    public void testGetAllBlogs() {
+    void testGetAllBlogs() {
     Page<BlogEntity> blogPage = new PageImpl<>(new ArrayList<>());
 
     when(blogRepository.findAll(any(Pageable.class))).thenReturn(blogPage);
@@ -95,7 +94,7 @@ class BlogServiceTest {
    }
 
     @Test
-    public void testDeleteBlog() {
+    void testDeleteBlog() {
     BlogEntity blogEntity = new BlogEntity();
     blogEntity.setImageUrl("imageUrl");
 
@@ -106,17 +105,5 @@ class BlogServiceTest {
     verify(storageService, times(1)).deleteFile("imageUrl");
     verify(blogRepository, times(1)).deleteById(1L);
     }
-
-    @Test
-    public void testSearchBlogs() {
-    List<BlogEntity> blogs = new ArrayList<>();
-
-    when(blogRepository.searchByKeyword(any(String.class))).thenReturn(blogs);
-
-    List<BlogEntity> result = blogService.searchBlogs("keyword");
-
-    assertNotNull(result);
-    }
-
 
 }

@@ -11,8 +11,6 @@ import java.util.Map;
 
 public class ErrorCodeUtil {
 
-    private ErrorCodeUtil(){}
-
     private static final Map<Class<? extends Throwable>, Integer> STANDARD_EXCEPTION_ERROR_CODES = Map.ofEntries(
 
             Map.entry(EmailAlreadyExistException.class, 100001),
@@ -34,6 +32,9 @@ public class ErrorCodeUtil {
             Map.entry(UsernameNotFoundException.class, 200008),
             Map.entry(ServletException.class, 200009)
     );
+
+    private ErrorCodeUtil() {
+    }
 
     public static int getErrorCodeForException(Throwable ex) {
         return STANDARD_EXCEPTION_ERROR_CODES.getOrDefault(ex.getClass(), 0);

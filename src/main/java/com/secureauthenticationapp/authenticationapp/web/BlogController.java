@@ -9,9 +9,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/blogs")
+@RequestMapping("/api/v1/blog")
 @AllArgsConstructor
 public class BlogController {
 
@@ -52,56 +48,47 @@ public class BlogController {
         } catch (Exception e) {
             HttpResponse response = HttpResponse.builder()
                     .timeStamp(LocalDateTime.now().toString())
-                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .reason(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .status(HttpStatus.BAD_REQUEST)
+                    .reason(HttpStatus.BAD_REQUEST.getReasonPhrase())
                     .message("Failed to create blog")
                     .developerMessage(e.getMessage())
                     .build();
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 
-    /**
-     * Update a blog post with optional image upload.
-     *
-     * @param id        The ID of the blog to update.
-     * @param blogJson  The updated blog data.
-     * @param imageFile The optional new image file for the blog.
-     * @return The updated blog entity.
-     */
     @PutMapping("/update/{id}")
     @Transactional
     public ResponseEntity<HttpResponse> updateBlog(
             @PathVariable Long id,
             @RequestPart("blog") String blogJson,
             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
-        try{
-        BlogEntity blogEntity = objectMapper.readValue(blogJson, BlogEntity.class);
-        BlogEntity updatedBlog = blogService.updateBlog(id, blogEntity, imageFile);
-        HttpResponse response = HttpResponse.builder()
-                .timeStamp(LocalDateTime.now().toString())
-                .statusCode(HttpStatus.OK.value())
-                .status(HttpStatus.OK)
-                .reason(HttpStatus.OK.getReasonPhrase())
-                .message("Blog updated successfully")
-                .developerMessage("Blog update processed")
-                .data(Collections.singletonMap("blogId", updatedBlog.getId()))
-                .build();
-        return ResponseEntity.ok(response);
-    }catch (Exception e) {
-        HttpResponse response = HttpResponse.builder()
-                .timeStamp(LocalDateTime.now().toString())
-                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .reason(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
-                .message("Failed to update blog")
-                .developerMessage(e.getMessage())
-                .build();
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            BlogEntity blogEntity = objectMapper.readValue(blogJson, BlogEntity.class);
+            BlogEntity updatedBlog = blogService.updateBlog(id, blogEntity, imageFile);
+            HttpResponse response = HttpResponse.builder()
+                    .timeStamp(LocalDateTime.now().toString())
+                    .statusCode(HttpStatus.OK.value())
+                    .status(HttpStatus.OK)
+                    .reason(HttpStatus.OK.getReasonPhrase())
+                    .message("Blog updated successfully")
+                    .developerMessage("Blog update processed")
+                    .data(Collections.singletonMap("blogId", updatedBlog.getId()))
+                    .build();
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            HttpResponse response = HttpResponse.builder()
+                    .timeStamp(LocalDateTime.now().toString())
+                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .reason(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+                    .message("Failed to update blog")
+                    .developerMessage(e.getMessage())
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-    }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<HttpResponse> getBlogById(@PathVariable Long id) {
@@ -119,51 +106,20 @@ public class BlogController {
         return ResponseEntity.ok(response);
     }
 
-
-//    @GetMapping("/all-blogs")
-//    public ResponseEntity<HttpResponse> getAllBlogs(@PageableDefault(size = 5) Pageable pageable) {
-//        Page<BlogEntity> page = blogService.getAllBlogs(pageable);
-//        HttpResponse response = HttpResponse.builder()
-//                .timeStamp(LocalDateTime.now().toString())
-//                .statusCode(HttpStatus.OK.value())
-//                .status(HttpStatus.OK)
-//                .reason(HttpStatus.OK.getReasonPhrase())
-//                .message("Blogs found successfully")
-//                .developerMessage("Blog retrieval processed")
-//                .data(Collections.singletonMap("blogs", page))
-//                .build();
-//        return ResponseEntity.ok(response);
-//    }
-
     @GetMapping("/all-blogs")
-    public ResponseEntity<HttpResponse> getAllBlogs(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "5") int size,
-            @RequestParam(value = "sort", defaultValue = "id,asc") String[] sort) {
-
-        // Parse the sort parameters
-        List<Sort.Order> orders = new ArrayList<>();
-        for (String sortOrder : sort) {
-            String[] sortSplit = sortOrder.split(",");
-            orders.add(new Sort.Order(Sort.Direction.fromString(sortSplit[1]), sortSplit[0]));
-        }
-
-        // Create a Pageable object
-        Pageable pageable = PageRequest.of(page, size, Sort.by(orders));
-
-        Page<BlogEntity> blogPage = blogService.getAllBlogs(pageable);
+    public ResponseEntity<HttpResponse> getAllBlogs(@PageableDefault(size = 5) Pageable pageable) {
+        Page<BlogEntity> page = blogService.getAllBlogs(pageable);
         HttpResponse response = HttpResponse.builder()
                 .timeStamp(LocalDateTime.now().toString())
                 .statusCode(HttpStatus.OK.value())
                 .status(HttpStatus.OK)
                 .reason(HttpStatus.OK.getReasonPhrase())
-                .message("Blogs loaded successfully")
+                .message("Blogs found successfully")
                 .developerMessage("Blog retrieval processed")
-                .data(Collections.singletonMap("blogs", blogPage))
+                .data(Collections.singletonMap("blogs", page))
                 .build();
         return ResponseEntity.ok(response);
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpResponse> deleteBlog(@PathVariable Long id) {
@@ -180,19 +136,5 @@ public class BlogController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<HttpResponse> searchBlogs(@RequestParam String keyword) {
-        List<BlogEntity> result = blogService.searchBlogs(keyword);
-        HttpResponse response = HttpResponse.builder()
-                .timeStamp(LocalDateTime.now().toString())
-                .statusCode(HttpStatus.OK.value())
-                .status(HttpStatus.OK)
-                .reason(HttpStatus.OK.getReasonPhrase())
-                .message("Blogs found successfully")
-                .developerMessage("Blog search processed")
-                .data(Collections.singletonMap("blogs", result))
-                .build();
-        return ResponseEntity.ok(response);
-    }
 }
 
