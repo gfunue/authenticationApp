@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -96,13 +95,5 @@ public class BlogService {
         log.info("Blog with id: {} and associated image deleted successfully", id);
     }
 
-    public List<BlogEntity> searchBlogs(String keyword) {
-        try {
-            return blogRepository.searchByKeyword(keyword);
-        } catch (Exception e) {
-            log.error("Failed to search blogs: {}", e.getMessage());
-            throw new BlogNotFoundException("Failed to search blogs: " + e.getMessage());
-        }
-    }
 }
 

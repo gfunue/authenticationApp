@@ -43,8 +43,6 @@ public class UserService {
                     .username(userRegistration.getUsername())
                     .email(userRegistration.getEmail())
                     .password(passwordEncoder.encode(userRegistration.getPassword()))
-                    .firstName(userRegistration.getFirstName())
-                    .lastName(userRegistration.getLastName())
                     .build();
             log.info("New user: {}", newUser + " created successfully");
             return userRepository.save(newUser);
@@ -54,7 +52,6 @@ public class UserService {
         }
     }
 
-    //@Transactional(dontRollbackOn = {UserAuthenticationException.class})
     public String authenticateUser(AuthenticationRequest authenticationRequest) {
         UserEntity user = userRepository.findByUsername(authenticationRequest.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
@@ -84,7 +81,7 @@ public class UserService {
 
     public void logoutUser(String token) {
         try {
-            if(!tokenStore.containsKey(token)) {
+            if (!tokenStore.containsKey(token)) {
                 throw new UserAuthenticationException("Invalid token");
             }
             tokenStore.remove(token);

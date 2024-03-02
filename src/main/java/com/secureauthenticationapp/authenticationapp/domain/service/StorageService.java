@@ -6,7 +6,6 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -59,14 +58,20 @@ public class StorageService {
         try {
             String fileName = generateFileName(file);
             fileUrl = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
-            s3Client.putObject(new PutObjectRequest(bucketName, fileName, file.getInputStream(), new ObjectMetadata())
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
+
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(file.getContentType());
+            metadata.setContentLength(file.getSize());
+
+            s3Client.putObject(new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata));
+
             return fileUrl;
         } catch (IOException e) {
             log.error("Error uploading file: {}", e.getMessage());
             throw new CustomFileUploadException("Error uploading file", e);
         }
     }
+
 
     public void deleteFile(String fileUrl) {
         String fileKey = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);

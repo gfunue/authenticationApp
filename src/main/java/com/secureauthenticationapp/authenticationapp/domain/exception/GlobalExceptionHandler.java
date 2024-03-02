@@ -46,8 +46,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserAuthenticationException.class)
     public ResponseEntity<Object> handleUserAuthenticationException(UserAuthenticationException ex) {
         ApiError apiError = ApiError.builder()
-                .status(HttpStatus.BAD_REQUEST)
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .status(HttpStatus.UNAUTHORIZED)
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .message(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .errorCode(ErrorCodeUtil.getErrorCodeForException(ex))
@@ -60,6 +60,18 @@ public class GlobalExceptionHandler {
         ApiError apiError = ApiError.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .errorCode(ErrorCodeUtil.getErrorCodeForException(ex))
+                .build();
+        return buildResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(BlogOperationException.class)
+    public ResponseEntity<Object> handleBlogOperationException(BlogOperationException ex) {
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .errorCode(ErrorCodeUtil.getErrorCodeForException(ex))
@@ -116,30 +128,18 @@ public class GlobalExceptionHandler {
         return buildResponseEntity(apiError);
     }
 
-//    @ExceptionHandler(BlogOperationException.class)
-//    public ResponseEntity<Object> handleBlogOperationException(BlogOperationException ex) {
-//        ApiError apiError = ApiError.builder()
-//                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-//                .message(ex.getMessage())
-//                .timestamp(LocalDateTime.now())
-//                .errorCode(ErrorCodeUtil.getErrorCodeForException(ex))
-//                .build();
-//        return buildResponseEntity(apiError);
-//    }
 
-
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<Object> handleException(Exception ex) {
-//        ApiError apiError = ApiError.builder()
-//                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-//                .message("An unexpected error occurred. Please try again later.")
-//                .timestamp(LocalDateTime.now())
-//                .errorCode(ErrorCodeUtil.getErrorCodeForException(ex))
-//                .build();
-//        return buildResponseEntity(apiError);
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleException(Exception ex) {
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .message("An unexpected error occurred. Please try again later.")
+                .timestamp(LocalDateTime.now())
+                .errorCode(ErrorCodeUtil.getErrorCodeForException(ex))
+                .build();
+        return buildResponseEntity(apiError);
+    }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiError> handleConstraintViolationException(ConstraintViolationException ex) {

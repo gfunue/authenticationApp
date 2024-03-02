@@ -4,6 +4,7 @@ import com.secureauthenticationapp.authenticationapp.domain.bean.AuthenticationR
 import com.secureauthenticationapp.authenticationapp.domain.bean.HttpResponse;
 import com.secureauthenticationapp.authenticationapp.domain.bean.UserRegistration;
 import com.secureauthenticationapp.authenticationapp.domain.entity.UserEntity;
+import com.secureauthenticationapp.authenticationapp.domain.exception.UserAuthenticationException;
 import com.secureauthenticationapp.authenticationapp.domain.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -24,17 +25,32 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<HttpResponse> registerUser(@Valid @RequestBody UserRegistration userRegistration) {
-        UserEntity newUser = userService.registerUser(userRegistration);
-        HttpResponse response = HttpResponse.builder()
-                .timeStamp(LocalDateTime.now().toString())
-                .statusCode(HttpStatus.CREATED.value())
-                .status(HttpStatus.CREATED)
-                .reason(HttpStatus.CREATED.getReasonPhrase())
-                .message("User registered successfully")
-                .developerMessage("User registration completed")
-                .data(Collections.singletonMap("userId", newUser.getUserId()))
-                .build();
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        try {
+            UserEntity newUser = userService.registerUser(userRegistration);
+            if (newUser == null) {
+                throw new UserAuthenticationException("User registration failed");
+            }
+            HttpResponse response = HttpResponse.builder()
+                    .timeStamp(LocalDateTime.now().toString())
+                    .statusCode(HttpStatus.CREATED.value())
+                    .status(HttpStatus.CREATED)
+                    .reason(HttpStatus.CREATED.getReasonPhrase())
+                    .message("User registered successfully")
+                    .developerMessage("User registration completed")
+                    .data(Collections.singletonMap("userId", newUser.getUserId()))
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (UserAuthenticationException e) {
+            HttpResponse errorResponse = HttpResponse.builder()
+                    .timeStamp(LocalDateTime.now().toString())
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .status(HttpStatus.BAD_REQUEST)
+                    .reason(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                    .message(e.getMessage())
+                    .developerMessage("User registration failed")
+                    .build();
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/login")
@@ -55,7 +71,7 @@ public class UserController {
     }
 
     @DeleteMapping("/logout")
-    public ResponseEntity<HttpResponse> logoutUser(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<HttpResponse> logoutUser(@Valid @RequestHeader("Authorization") String authHeader) {
         final String token = authHeader.substring(7);
         userService.logoutUser(token);
         HttpResponse response = HttpResponse.builder()
